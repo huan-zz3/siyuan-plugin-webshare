@@ -47,7 +47,7 @@ interface CaptureConsoleHandle {
     showCapture?: (result: CaptureResult) => void;
 }
 
-export default class PluginSample extends Plugin {
+export default class SiYuanPublisherPlugin extends Plugin {
 
     private isMobile: boolean;
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
@@ -73,7 +73,7 @@ export default class PluginSample extends Plugin {
     async onload() {
         this.data[STORAGE_NAME] = { readonlyText: "Readonly" };
 
-        console.log("Loading plugin-sample-vite-svelte");
+        console.log("Loading siyuan-plugin-publisher");
 
         this.kernel.rpc.bind("notify", this.onKernelPluginNotify);
         this.kernel.rpc.bind("capture-received", this.onCaptureReceived);
@@ -155,7 +155,7 @@ export default class PluginSample extends Plugin {
                     <svg class="toolbar__icon"><use xlink:href="#iconEmoji"></use></svg>
                         <div class="toolbar__text">Custom Dock</div>
                     </div>
-                    <div class="fn__flex-1 plugin-sample__custom-dock">
+                    <div class="fn__flex-1 siyuan-publisher__custom-dock">
                         ${this.data.text}
                     </div>
                     </div>`;
@@ -169,7 +169,7 @@ export default class PluginSample extends Plugin {
                         <span class="fn__flex-1 fn__space"></span>
                         <span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="Min ${adaptHotkey("⌘W")}"><svg><use xlink:href="#iconMin"></use></svg></span>
                     </div>
-                    <div class="fn__flex-1 plugin-sample__custom-dock">
+                    <div class="fn__flex-1 siyuan-publisher__custom-dock">
                         ${this.data.text}
                     </div>
                     </div>`;
@@ -373,7 +373,7 @@ export default class PluginSample extends Plugin {
         });
 
         const statusIconTemp = document.createElement("template");
-        statusIconTemp.innerHTML = `<div class="toolbar__item ariaLabel" aria-label="Remove plugin-sample Data">
+        statusIconTemp.innerHTML = `<div class="toolbar__item ariaLabel" aria-label="Remove siyuan-plugin-publisher Data">
     <svg>
         <use xlink:href="#iconTrashcan"></use>
     </svg>

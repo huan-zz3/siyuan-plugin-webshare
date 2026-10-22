@@ -1,8 +1,8 @@
 {
-  "name": "plugin-sample-vite-svelte",
-  "author": "frostime",
-  "url": "https://github.com/siyuan-note/plugin-sample-vite-svelte",
-  "version": "0.5.1",
+  "name": "siyuan-plugin-publisher",
+  "author": "【待填写】作者名",
+  "url": "【待填写】GitHub 仓库地址",
+  "version": "0.1.0",
   "minAppVersion": "3.8.0",
   "kernels": [
     "windows",
@@ -32,12 +32,12 @@
     "desktop-window"
   ],
   "displayName": {
-    "default": "Plugin sample with vite and svelte",
-    "zh-CN": "插件样例 vite + svelte 版"
+    "default": "SiYuan Publisher",
+    "zh-CN": "思源发布器"
   },
   "description": {
-    "default": "SiYuan plugin sample with vite and svelte",
-    "zh-CN": "使用 vite 和 svelte 开发的思源插件样例"
+    "default": "SiYuan Publisher plugin (under development).",
+    "zh-CN": "思源笔记发布插件（开发中，功能待完善）"
   },
   "readme": {
     "default": "README.md",
@@ -45,16 +45,9 @@
   },
   "icon": "icon.png",
   "preview": "preview.png",
-  "funding": {
-    "openCollective": "",
-    "patreon": "",
-    "github": "",
-    "custom": [
-      "https://ld246.com/sponsor"
-    ]
-  },
   "keywords": [
-    "sample",
-    "示例"
+    "publisher",
+    "发布",
+    "思源"
   ]
 }

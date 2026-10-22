@@ -1,11 +1,11 @@
 {
-  "name": "plugin-sample-vite-svelte",
-  "version": "0.5.1",
+  "name": "siyuan-plugin-publisher",
+  "version": "0.1.0",
   "type": "module",
-  "description": "This is a sample plugin based on vite and svelte for Siyuan (https://b3log.org/siyuan)",
-  "repository": "",
-  "homepage": "",
-  "author": "frostime",
+  "description": "思源笔记发布插件（开发中，功能待完善）",
+  "repository": "【待填写】GitHub 仓库地址",
+  "homepage": "【待填写】项目主页",
+  "author": "【待填写】作者名",
   "license": "MIT",
   "packageManager": "pnpm@11.4.0",
   "engines": {

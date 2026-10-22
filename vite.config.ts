@@ -37,7 +37,7 @@ export default defineConfig(buildTarget === "kernel" ? {
 
         lib: {
             entry: resolve(import.meta.dirname, "src/kernel.ts"),
-            name: "KernelPluginSample",
+            name: "SiYuanPublisherKernel",
             fileName: () => "kernel.js",
             formats: ["iife"],
         },

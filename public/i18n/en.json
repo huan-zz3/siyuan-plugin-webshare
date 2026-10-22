@@ -13,10 +13,10 @@
     "getTab": "Print out all opened custom tabs in the debugger",
     "name": "SiYuan",
     "hello": {
-        "makesure": "Before using this template, please read the <a href=\"https://github.com/siyuan-note/plugin-sample\">offical sample</a>, make sure that you've known about the pipeline for plugin developing."
+        "makesure": "This dialog is template demo content and will be replaced by the plugin UI."
     },
     "hintTitle":"About",
-    "hintDesc":"<a href='https://github.com/siyuan-note/plugin-sample-vite-svelte'>plugin-sample-vite-svelte</a><br>@frostime<br>@88250<br>@zxkmm",
+    "hintDesc":"SiYuan Publisher<br>Author: TBD<br>Project URL: TBD",
     "kernelCapture": {
         "menu": "Kernel Plugin Example: External Capture Service",
         "title": "External Capture Service",
