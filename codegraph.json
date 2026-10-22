@@ -1,0 +1,8 @@
+{
+  "includeIgnored": [
+    "reference/"
+  ],
+  "deprioritize": [
+    "reference/"
+  ]
+}

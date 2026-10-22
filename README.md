@@ -52,7 +52,37 @@ pnpm build       # writes dist/ and package.zip
 | `public/i18n/` | UI translations (`en.json`, `zh-CN.json`) |
 | `plugin.json` | SiYuan plugin manifest |
 | `docs/` | Kernel plugin documentation |
+| `reference/` | Local upstream checkouts for API lookup (git-ignored, not built) |
 | `AGENTS.md` | Repo-specific notes for AI coding agents |
+
+## Reference sources (optional)
+
+`reference/` holds local, git-ignored checkouts used only for looking up kernel APIs and
+implementation details. Nothing inside it is tracked or built.
+
+- `reference/siyuan/` — [siyuan-note/siyuan](https://github.com/siyuan-note/siyuan), full source at a release tag
+- `reference/siyuan-plugin-share/` — [b8l8u8e8/siyuan-plugin-share](https://github.com/b8l8u8e8/siyuan-plugin-share), implementation reference
+
+To create or upgrade the SiYuan checkout, delete the directory and take a fresh shallow clone of the
+latest stable release:
+
+```powershell
+$tag = (Invoke-RestMethod "https://api.github.com/repos/siyuan-note/siyuan/releases/latest").tag_name
+Remove-Item -Recurse -Force reference\siyuan -ErrorAction SilentlyContinue
+git clone --depth 1 --single-branch --branch $tag --no-tags https://github.com/siyuan-note/siyuan.git reference/siyuan
+```
+
+The third-party reference tracks `main`, so it is refreshed the same way:
+
+```powershell
+Remove-Item -Recurse -Force reference\siyuan-plugin-share -ErrorAction SilentlyContinue
+git clone --depth 1 --single-branch https://github.com/b8l8u8e8/siyuan-plugin-share.git reference/siyuan-plugin-share
+```
+
+`reference/` is listed in `.gitignore` and sits outside every `tsconfig` / Vite entry, so
+`pnpm check` and `pnpm build` ignore it. CodeGraph indexes it only because `codegraph.json` opts in
+via `includeIgnored`; after replacing a checkout, rebuild the index with `codegraph index` (on
+Windows, stop the CodeGraph daemon first — it holds `codegraph.db`).
 
 ## License
 

@@ -51,7 +51,35 @@ pnpm build       # 生成 dist/ 和 package.zip
 | `public/i18n/` | 界面文案（`en.json`、`zh-CN.json`） |
 | `plugin.json` | 思源插件清单 |
 | `docs/` | Kernel Plugin 文档 |
+| `reference/` | 本地上游参考代码（被 git 忽略，不参与构建） |
 | `AGENTS.md` | 给 AI 编码代理的仓库约定 |
+
+## 参考源码（可选）
+
+`reference/` 存放本地的上游代码，仅用于查阅 Kernel API 和实现细节；整个目录被 git 忽略，也不参与构建。
+
+- `reference/siyuan/` —— [siyuan-note/siyuan](https://github.com/siyuan-note/siyuan)，正式版 tag 的完整源码
+- `reference/siyuan-plugin-share/` —— [b8l8u8e8/siyuan-plugin-share](https://github.com/b8l8u8e8/siyuan-plugin-share)，第三方实现参考
+
+需要首次拉取或升级思源本体时，删除目录并重新浅克隆最新的正式版即可：
+
+```powershell
+$tag = (Invoke-RestMethod "https://api.github.com/repos/siyuan-note/siyuan/releases/latest").tag_name
+Remove-Item -Recurse -Force reference\siyuan -ErrorAction SilentlyContinue
+git clone --depth 1 --single-branch --branch $tag --no-tags https://github.com/siyuan-note/siyuan.git reference/siyuan
+```
+
+第三方参考仓库跟随 `main`，同样用新克隆刷新：
+
+```powershell
+Remove-Item -Recurse -Force reference\siyuan-plugin-share -ErrorAction SilentlyContinue
+git clone --depth 1 --single-branch https://github.com/b8l8u8e8/siyuan-plugin-share.git reference/siyuan-plugin-share
+```
+
+`reference/` 已写进 `.gitignore`，且不在任何 `tsconfig` / Vite 入口范围内，因此 `pnpm check` 和
+`pnpm build` 都不会扫到它。CodeGraph 能索引它，仅因为 `codegraph.json` 用 `includeIgnored` 显式放行；
+替换参考代码后需执行 `codegraph index` 重建索引（Windows 上要先停掉占用 `codegraph.db` 的
+CodeGraph daemon）。
 
 ## 许可证
 

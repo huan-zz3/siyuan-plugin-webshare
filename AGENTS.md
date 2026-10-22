@@ -1,6 +1,7 @@
 # AGENTS.md
 
 思源（SiYuan）插件项目，基于 `plugin-sample-vite-svelte` 模板：Vite + TypeScript + Svelte 5，包管理用 pnpm。
+注意！：任何改动都需要同步创建或更新README*.md和AGENTS.md，时刻保持最新版。
 
 ## 身份注意
 
@@ -56,6 +57,14 @@
 - 设置环境变量 `SIYUAN_PLUGIN_DIR` 可直接指定插件目录，跳过交互选择。
 - `pnpm make-install`：先构建，再把 `dist/` 复制到插件目录。
 - `dev/`、`dist/`、`package.zip` 都是生成物，不要手改。
+
+## 参考代码（`reference/`，不入库、不参与构建）
+
+- `reference/siyuan/`：思源本体 `v3.8.8` 源码（`--depth 1`、detached HEAD）。查 HTTP API 时看 `kernel/api/*.go` + `kernel/apicontract/contracts.go`，前端类型看 `app/src/types/api/index.d.ts`。
+- `reference/siyuan-plugin-share/`：第三方分享插件（根目录 `index.js` 是构建产物，`php-site/` 是服务端），只作实现参考。
+- 两者在 `.gitignore` 里整体忽略；`tsconfig.json` 的 `include` 与 `vite.config.ts` 的入口只指向 `src/`，所以 `pnpm check` / `pnpm build` 不会扫到。
+- 更新思源源码：`git -C reference/siyuan fetch --depth 1 origin tag vX.Y.Z` 然后 `git -C reference/siyuan checkout vX.Y.Z`。
+- CodeGraph 默认不索引被 `.gitignore` 的嵌套仓库；根目录 `codegraph.json` 用 `includeIgnored` 显式放行 `reference/`，`deprioritize` 保证本项目代码在搜索排序中优先。改完配置要停掉 codegraph daemon 再 `codegraph index`（`codegraph sync` 不会重建索引）。
 
 ## 发布
 

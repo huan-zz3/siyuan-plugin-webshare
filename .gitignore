@@ -13,3 +13,5 @@ tmp
 
 .omo/
 .codegraph/
+# Local reference checkouts (siyuan core + third-party plugins) — not tracked, not built
+reference/
