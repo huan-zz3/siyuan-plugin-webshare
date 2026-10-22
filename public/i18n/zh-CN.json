@@ -17,6 +17,10 @@
     },
     "hintTitle": "关于",
     "hintDesc": "思源发布器<br>作者：【待填写】<br>项目地址：【待填写】",
+    "exportPublishArtifact": "导出为可发布产物",
+    "exportPublishArtifactNoDoc": "请先打开一篇文档再导出",
+    "exportPublishArtifactSuccess": "发布产物已生成：",
+    "exportPublishArtifactFailed": "发布产物导出失败",
     "kernelCapture": {
         "menu": "Kernel Plugin 示例：外部摘录服务",
         "title": "外部摘录服务",

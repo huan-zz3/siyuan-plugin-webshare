@@ -12,13 +12,40 @@
 - 作者：【待填写】
 - 仓库地址：【待填写】
 
-项目基于 `plugin-sample-vite-svelte` 模板初始化，功能尚未开始实现。下面是构建和运行方式。
+项目基于 `plugin-sample-vite-svelte` 模板初始化。已开始第一个里程碑：把当前文档导出为可静态托管的 HTML 产物。
 
 ## 环境要求
 
 - Node.js >= 24
 - pnpm 11.4
 - 思源桌面端
+
+## 发布产物（里程碑 A）
+
+打开一篇文档后，从命令面板运行 **导出为可发布产物**（`exportPublishArtifact`）。插件会：
+
+1. 以 `savePath: ""` 调用 `/api/export/exportHTML`；
+2. 拿到渲染好的正文片段和内核导出目录；
+3. 用固定模板拼出 `index.html`；
+4. 把它写回内核生成的资源目录。
+
+产物是 `<工作区>/temp/export/<folder>/` 下的自包含静态目录，含 `index.html`、`assets/`、`emojis/`、
+`stage/`、`appearance/`。用任意静态服务器指向该目录并在浏览器打开即可。
+
+产物是临时的：内核启动/退出时会清空 `temp/export`；加密笔记本被锁定时会清空 `temp/export/<boxID>`。
+请在重启或锁定前完成上传。
+
+本里程碑的已知限制：仅浅色主题；不包含插件 CSS、代码片段、自定义字体、移动端附加样式和书签图标；
+PlantUML 依赖所配置的远程服务；导出 CSS 引用了 `JetBrainsMono`，但内核不会拷贝该字体。
+
+本地验证：运行命令后，用通知里给出的目录启动静态服务器：
+
+```bash
+npx serve "<工作区>/temp/export/<folder>"
+```
+
+检查图片、自定义 emoji、代码高亮、行内/块级公式、mermaid、echarts、graphviz、flowchart、mindmap、abc。
+公式和图表的渲染由访客浏览器执行思源自带的运行时完成。
 
 ## 开发
 
@@ -46,6 +73,7 @@ pnpm build       # 生成 dist/ 和 package.zip
 | `src/index.ts` | 前端入口（生成 `index.js`） |
 | `src/kernel.ts` | Kernel 入口（生成 `kernel.js`，无 DOM / Node 内置模块） |
 | `src/kernel-capture/` | 模板自带的外部摘录服务示例 |
+| `src/publish/` | 静态 HTML 产物导出（`exportHTML` + 固定 `index.html` 模板） |
 | `src/api.ts` | 思源 HTTP API 封装 |
 | `src/libs/` | 设置、对话框、表单等工具 |
 | `public/i18n/` | 界面文案（`en.json`、`zh-CN.json`） |

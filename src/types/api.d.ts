@@ -50,6 +50,13 @@ interface IResExportMdContent {
     content: string;
 }
 
+interface IResExportHTML {
+    id: string;
+    name: string;
+    content: string;
+    folder?: string;
+}
+
 interface IResBootProgress {
     progress: number;
     details: string;

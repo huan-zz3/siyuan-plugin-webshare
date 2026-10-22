@@ -12,14 +12,46 @@ A SiYuan plugin for publishing notes. **The plugin is under development.**
 - Author: TBD
 - Repository: TBD
 
-The project was initialized from the `plugin-sample-vite-svelte` template. Feature implementation
-has not started yet; the sections below describe how to build and run it.
+The project was initialized from the `plugin-sample-vite-svelte` template. Feature implementation has
+started with the first milestone: exporting the current document as a static, self-contained HTML
+artifact.
 
 ## Requirements
 
 - Node.js >= 24
 - pnpm 11.4
 - SiYuan desktop
+
+## Publishing artifact (Milestone A)
+
+Run **Export as publish artifact** (`exportPublishArtifact`) from the command palette while a document
+is open. The plugin:
+
+1. calls `/api/export/exportHTML` with `savePath: ""`;
+2. receives the rendered body fragment and the kernel export folder;
+3. builds a fixed `index.html` around that fragment;
+4. writes it next to the kernel-generated assets.
+
+The result is a self-contained static directory at `<workspace>/temp/export/<folder>/` containing
+`index.html`, `assets/`, `emojis/`, `stage/`, and `appearance/`. Serve that directory with any static
+server and open it in a browser.
+
+The artifact is temporary: the kernel clears `temp/export` on startup and exit, and clears
+`temp/export/<boxID>` when an encrypted notebook is locked. Upload it before restarting or locking.
+
+Known limits for this milestone: light theme only; plugin CSS, code snippets, custom fonts, mobile
+extras, and bookmark icons are not included; PlantUML uses the configured remote service;
+`JetBrainsMono` is referenced by the export CSS but not copied by the kernel.
+
+To verify locally, run the command and use the directory shown in the notification:
+
+```bash
+npx serve "<workspace>/temp/export/<folder>"
+```
+
+Check images, custom emoji, code highlighting, inline and block math, mermaid, echarts, graphviz,
+flowchart, mindmap, and abc. Formula and diagram rendering happens in the visitor's browser through
+SiYuan's bundled runtime.
 
 ## Development
 
@@ -47,6 +79,7 @@ pnpm build       # writes dist/ and package.zip
 | `src/index.ts` | Frontend entry (`index.js`) |
 | `src/kernel.ts` | Kernel entry (`kernel.js`, no DOM / Node built-ins) |
 | `src/kernel-capture/` | External capture service example kept from the template |
+| `src/publish/` | Static HTML artifact export (`exportHTML` + fixed `index.html` template) |
 | `src/api.ts` | SiYuan HTTP API wrapper |
 | `src/libs/` | Settings, dialog, and form helpers |
 | `public/i18n/` | UI translations (`en.json`, `zh-CN.json`) |

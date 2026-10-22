@@ -17,6 +17,10 @@
     },
     "hintTitle":"About",
     "hintDesc":"SiYuan Publisher<br>Author: TBD<br>Project URL: TBD",
+    "exportPublishArtifact": "Export as publish artifact",
+    "exportPublishArtifactNoDoc": "Open a document before exporting",
+    "exportPublishArtifactSuccess": "Publish artifact ready: ",
+    "exportPublishArtifactFailed": "Publish artifact export failed",
     "kernelCapture": {
         "menu": "Kernel Plugin Example: External Capture Service",
         "title": "External Capture Service",

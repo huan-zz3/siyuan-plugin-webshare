@@ -545,6 +545,25 @@ export async function exportMdContent(id: DocumentId, options?: {
     return request(url, data);
 }
 
+/**
+ * Export a document as HTML; the kernel writes assets into `<workspace>/temp/export/<folder>`.
+ * @param id document id
+ * @param options optional overrides for the PDF flag and save path
+ * @returns the kernel response with the HTML body fragment and export folder
+ */
+export async function exportHTML(id: DocumentId, options?: {
+    pdf?: boolean;
+    savePath?: string;
+}): Promise<ApiResponse<IResExportHTML>> {
+    let data = {
+        id: id,
+        pdf: options?.pdf ?? false,
+        savePath: options?.savePath ?? ""
+    }
+    let url = '/api/export/exportHTML';
+    return request(url, data);
+}
+
 export async function exportResources(paths: string[], name: string): Promise<ApiResponse<IResExportResources>> {
     let data = {
         paths: paths,

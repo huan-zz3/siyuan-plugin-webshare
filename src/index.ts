@@ -10,6 +10,7 @@ import {
     // Setting,
     // fetchPost,
     Protyle,
+    IProtyle,
     openWindow,
     IOperation,
     Constants,
@@ -34,6 +35,7 @@ import HelloExample from "@/hello.svelte";
 import SettingExample from "@/setting-example.svelte";
 import CaptureConsole from "@/kernel-capture/capture-console.svelte";
 import type { CaptureBroadcast, CaptureResult } from "@/kernel-capture/contracts";
+import { exportDocumentAsArtifact } from "@/publish/exporter";
 
 import { SettingUtils } from "./libs/setting-utils";
 import { svelteDialog } from "./libs/dialog";
@@ -127,6 +129,25 @@ export default class SiYuanPublisherPlugin extends Plugin {
             hotkey: "⇧⌘M",
             globalCallback: () => {
                 console.log(this.getOpenedTab());
+            },
+        });
+
+        this.addCommand({
+            langKey: "exportPublishArtifact",
+            editorCallback: async (protyle: IProtyle) => {
+                const documentId = protyle.block?.rootID;
+                if (!documentId) {
+                    showMessage(this.i18n.exportPublishArtifactNoDoc);
+                    return;
+                }
+                try {
+                    const artifact = await exportDocumentAsArtifact(documentId);
+                    showMessage(`${this.i18n.exportPublishArtifactSuccess}${artifact.absoluteDir}`, 8000);
+                } catch (error) {
+                    console.error("[siyuan-plugin-publisher] export failed", error);
+                    const reason = error instanceof Error ? error.message : String(error);
+                    showMessage(`${this.i18n.exportPublishArtifactFailed}: ${reason}`, 10000);
+                }
             },
         });
 

@@ -30,7 +30,7 @@
 
 ## 代码结构
 
-- `src/index.ts`：前端插件类（类名仍是 `PluginSample`），注册顶栏菜单、命令、dock、tab 和设置面板。
+- `src/index.ts`：前端插件类 `SiYuanPublisherPlugin`，注册顶栏菜单、命令、dock、tab 和设置面板；命令 `exportPublishArtifact` 导出当前文档。
 - `src/kernel.ts`：Kernel 生命周期；用 `api.rpc.bind` 注册 `echo`、`readSampleStorage`。
 - `src/api.ts`：思源 HTTP API 封装；`request()` 返回 `{ ok, raw, data }`。
 - `src/kernel-capture/`：外部摘录服务。
@@ -38,8 +38,25 @@
   - 写入流程：`/api/filetree/createDailyNote` + `/api/block/appendBlock`；状态用 `api.storage` 持久化。
   - `contracts.ts` 是前后端共享类型。
   - 前端与 kernel 通过 `kernel.rpc.bind/broadcast` 通信，事件为 `notify`、`capture-received`。
+- `src/publish/`：里程碑 A 的静态发布产物。
+  - `template.ts`：按思源原生 `app/src/protyle/export/index.ts` 的 `onExport` 固化 `index.html`；固定浅色主题，不含插件 CSS、代码片段、自定义字体、移动端附加和书签图标。
+  - `exporter.ts`：`exportHTML`（`pdf:false`、`savePath:""`）→ 校验 → 模板 → `/api/file/putFile` 写 `temp/export/<folder>/index.html`，返回 `{ folder, absoluteDir, name }`。
+  - `types.ts`：`TemplateParams`、`ExportArtifact`。
 - `src/libs/`：`SettingUtils`（存储名 `menu-config`）、`svelteDialog`、Form 组件等。
 - 路径别名 `@/` → `src/`。
+
+## 发布产物（里程碑 A）
+
+- 导出入口：`src/index.ts` 的 `exportPublishArtifact` 命令；只用 `editorCallback`（需要活动文档）。
+- `/api/export/exportHTML` 传 `savePath: ""`，返回 `{ id, name, content, folder }`；`content` 是 body 片段，内核把资源写进 `<工作区>/temp/export/<folder>`，**不会写 `index.html`**，必须由插件补。
+- `pdf` 是契约必填字段，即使导出 HTML 也要显式传 `false`。
+- 只导出当前文档：`exportHTML` 不传 `merge`（内核默认 `false`），不合并子文档。
+- 不要调用 `/api/export/exportBrowserHTML`：它会写 `index.html`、打包 zip 并**删除整个目录**。
+- `<工作区>/temp/export/**` 在 `/api/file/*` 白名单内；`temp/` 其余路径是敏感路径。
+- 产物是临时的：内核启动/退出清空 `temp/export`；加密笔记本锁定清空 `temp/export/<boxID>`。B 阶段上传前不要重启/锁定。
+- 模板必须保留内联的 `window.siyuan` 引导和 `Protyle.*Render` 调用（highlight/math/mermaid/flowchart/graphviz/chart/mindmap/abc/html/tabs/plantuml），否则公式和图表只剩 `data-content` 占位。
+- 固定浅色：`data-theme-mode="light"` 且 bootstrap 的 `appearance.mode` 固定为 `0`；主题 CSS 用当前浅色主题。
+- 验证：`pnpm check` + `pnpm build`；本地用静态服务器指向产物目录，检查图片、emoji、代码高亮、公式、图表。
 
 ## 约定与陷阱
 
