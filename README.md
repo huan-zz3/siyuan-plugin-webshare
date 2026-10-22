@@ -6,7 +6,7 @@ A SiYuan plugin for publishing notes. **The plugin is under development.**
 
 ## Status
 
-- Plugin id: `siyuan-plugin-publisher`
+- Plugin id: `siyuan-plugin-webshare`
 - Display name: SiYuan Publisher / 思源发布器
 - Version: `0.1.0`
 - Author: TBD
@@ -57,7 +57,7 @@ SiYuan's bundled runtime.
 
 ```bash
 pnpm i
-pnpm make-link   # link dev/ into <workspace>/data/plugins/siyuan-plugin-publisher
+pnpm make-link   # link dev/ into <workspace>/data/plugins/siyuan-plugin-webshare
 pnpm dev         # watch the frontend and kernel bundles
 ```
 

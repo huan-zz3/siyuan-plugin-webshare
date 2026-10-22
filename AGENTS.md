@@ -5,7 +5,7 @@
 
 ## 身份注意
 
-- 插件 id 是 `siyuan-plugin-publisher`，显示名「思源发布器」；`package.json` 与 `plugin.json` 已同步。
+- 插件 id 是 `siyuan-plugin-webshare`，显示名「思源发布器」；`package.json` 与 `plugin.json` 已同步。
 - 作者、仓库地址等未知字段目前是 `【待填写】` 中文占位，正式发布前必须替换。
 - `scripts/utils.js` 用 `plugin.json.name` 决定安装/软链目录。改名必须同时改两个 JSON，并处理已存在的插件目录。
 - `README.md` / `README.zh-CN.md` 已是项目说明；上游模板文档保留在 `docs/` 和模板仓库。

@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-- 插件 id：`siyuan-plugin-publisher`
+- 插件 id：`siyuan-plugin-webshare`
 - 显示名称：思源发布器 / SiYuan Publisher
 - 版本：`0.1.0`
 - 作者：【待填写】
@@ -51,7 +51,7 @@ npx serve "<工作区>/temp/export/<folder>"
 
 ```bash
 pnpm i
-pnpm make-link   # 把 dev/ 软链到 <工作区>/data/plugins/siyuan-plugin-publisher
+pnpm make-link   # 把 dev/ 软链到 <工作区>/data/plugins/siyuan-plugin-webshare
 pnpm dev         # 同时监听前端和 kernel 两个 bundle
 ```
 

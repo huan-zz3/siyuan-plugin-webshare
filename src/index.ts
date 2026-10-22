@@ -75,7 +75,7 @@ export default class SiYuanPublisherPlugin extends Plugin {
     async onload() {
         this.data[STORAGE_NAME] = { readonlyText: "Readonly" };
 
-        console.log("Loading siyuan-plugin-publisher");
+        console.log("Loading siyuan-plugin-webshare");
 
         this.kernel.rpc.bind("notify", this.onKernelPluginNotify);
         this.kernel.rpc.bind("capture-received", this.onCaptureReceived);
@@ -144,7 +144,7 @@ export default class SiYuanPublisherPlugin extends Plugin {
                     const artifact = await exportDocumentAsArtifact(documentId);
                     showMessage(`${this.i18n.exportPublishArtifactSuccess}${artifact.absoluteDir}`, 8000);
                 } catch (error) {
-                    console.error("[siyuan-plugin-publisher] export failed", error);
+                    console.error("[siyuan-plugin-webshare] export failed", error);
                     const reason = error instanceof Error ? error.message : String(error);
                     showMessage(`${this.i18n.exportPublishArtifactFailed}: ${reason}`, 10000);
                 }
@@ -394,7 +394,7 @@ export default class SiYuanPublisherPlugin extends Plugin {
         });
 
         const statusIconTemp = document.createElement("template");
-        statusIconTemp.innerHTML = `<div class="toolbar__item ariaLabel" aria-label="Remove siyuan-plugin-publisher Data">
+        statusIconTemp.innerHTML = `<div class="toolbar__item ariaLabel" aria-label="Remove siyuan-plugin-webshare Data">
     <svg>
         <use xlink:href="#iconTrashcan"></use>
     </svg>

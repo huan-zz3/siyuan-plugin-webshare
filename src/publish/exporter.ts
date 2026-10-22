@@ -8,7 +8,7 @@ import { exportHTML, saveBlob } from "@/api";
 import { buildIndexHtml } from "./template";
 import type { ExportArtifact } from "./types";
 
-const LOG_PREFIX = "[siyuan-plugin-publisher]";
+const LOG_PREFIX = "[siyuan-plugin-webshare]";
 
 interface RuntimeConfig {
     appearance?: {

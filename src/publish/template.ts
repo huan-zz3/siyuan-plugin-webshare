@@ -7,7 +7,7 @@
  */
 import type { TemplateParams } from "./types";
 
-const LOG_PREFIX = "[siyuan-plugin-publisher]";
+const LOG_PREFIX = "[siyuan-plugin-webshare]";
 
 /** Font shipped with SiYuan that keeps emoji rendering identical across platforms. */
 const NOTO_EMOJI_FONT_PATH = "appearance/fonts/Noto-COLRv1-2.051/Noto-COLRv1.woff2";
