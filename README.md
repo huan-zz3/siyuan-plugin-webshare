@@ -1,16 +1,18 @@
-# SiYuan Publisher
+# Doc Web Share
 
-A SiYuan plugin for publishing notes. **The plugin is under development.**
+A SiYuan plugin that shares notes to the public web. It exports the current document as a
+self-contained static artifact and can upload it to a self-hosted static server, producing a public
+link. Free to use and self-hostable.
 
 [中文版](./README.zh-CN.md)
 
 ## Status
 
 - Plugin id: `siyuan-plugin-webshare`
-- Display name: SiYuan Publisher / 思源发布器
+- Display name: Doc Web Share / 文档公网分享
 - Version: `0.1.0`
-- Author: TBD
-- Repository: TBD
+- Author: 幻酌
+- Repository: <https://github.com/huan-zz3/siyuan-plugin-webshare>
 
 The project was initialized from the `plugin-sample-vite-svelte` template. It now implements two
 milestones: exporting the current document as a static, self-contained HTML artifact, and uploading
@@ -75,7 +77,7 @@ at the origin root (`/api/*`, `/p/*`); subpath deployment is not supported in th
 
 ### Configure and publish
 
-Open the plugin settings (SiYuan settings → Plugins → SiYuan Publisher → Settings) and set:
+Open the plugin settings (SiYuan settings → Plugins → Doc Web Share → Settings) and set:
 
 - **Publish server URL**: origin only, for example `https://publish.example.com`
 - **Publish server token**: the server's `PUBLISH_TOKEN`
@@ -142,15 +144,14 @@ If SiYuan is locked, `make-install` cannot query the workspace list. Unlock SiYu
 | Path | Purpose |
 | --- | --- |
 | `src/index.ts` | Frontend entry (`index.js`) |
-| `src/kernel.ts` | Kernel entry (`kernel.js`, no DOM / Node built-ins) |
-| `src/kernel-capture/` | External capture service example kept from the template |
+| `src/examples/` | Archived template examples (frontend snippets and external capture service; fully commented, not built) |
+| `src/kernel.ts` | Kernel entry (`kernel.js`; demo RPC only) |
 | `src/publish/` | Artifact export, artifact enumeration, server client, upload orchestration, progress dialog |
 | `server/` | Independent Fastify static publishing service (own package, tsconfig, and tests) |
 | `src/api.ts` | SiYuan HTTP API wrapper |
 | `src/libs/` | Settings, dialog, and form helpers |
 | `public/i18n/` | UI translations (`en.json`, `zh-CN.json`) |
 | `plugin.json` | SiYuan plugin manifest |
-| `docs/` | Kernel plugin documentation |
 | `reference/` | Local upstream checkouts for API lookup (git-ignored, not built) |
 | `AGENTS.md` | Repo-specific notes for AI coding agents |
 

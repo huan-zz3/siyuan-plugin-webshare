@@ -6,10 +6,9 @@
 
 ## 身份注意
 
-- 插件 id 是 `siyuan-plugin-webshare`，显示名「思源发布器」；`package.json` 与 `plugin.json` 已同步。
-- 作者、仓库地址等未知字段目前是 `【待填写】` 中文占位，正式发布前必须替换。
+- 插件 id 是 `siyuan-plugin-webshare`，显示名「文档公网分享」（英文 `Doc Web Share`）；作者「幻酌」，仓库 `https://github.com/huan-zz3/siyuan-plugin-webshare`。`package.json` 与 `plugin.json` 已同步。
 - `scripts/utils.js` 用 `plugin.json.name` 决定安装/软链目录。改名必须同时改两个 JSON，并处理已存在的插件目录。
-- `README.md` / `README.zh-CN.md` 已是项目说明；上游模板文档保留在 `docs/` 和模板仓库。
+- `README.md` / `README.zh-CN.md` 已是项目说明；模板示例归档在 `src/examples/`，上游模板仓库仍可参考。
 
 ## 命令
 
@@ -28,20 +27,18 @@
 - **Kernel 入口** `src/kernel.ts` → `dist/kernel.js`（IIFE）。运行在 kernel 的 goja 运行时：没有 DOM，也没有 `fs` / `child_process` / `net` 等通用 Node 模块。
 - `vite.config.ts` 用 `NODE_ENV` 和 `VITE_BUILD_TARGET` 切换产物：development 输出到 `dev/`，production 输出到 `dist/`。不要直接跑 `vite build`，用 `pnpm` 脚本。
 - `package.zip` 只在 production 的 kernel 构建中由 `zipPack` 生成；只跑 `build:app` 不会产出 zip。
-- `viteStaticCopy` 会把 `README*.md`、`docs/`、`asset/`、`plugin.json`、icon/preview 复制进 `dist/`。README 用到的图片必须放在 `asset/`。
+- `viteStaticCopy` 会把 `README*.md`、`asset/`、`plugin.json`、icon/preview 复制进 `dist/`。README 用到的图片必须放在 `asset/`。
 - 构建时会从 `dist/i18n` 删除 YAML/Markdown，只保留 JSON。
 - `server/` 有自己的 `package.json` / `tsconfig.json` / `dist/`，不参与 Vite 构建，不进入 `package.zip`。根 `tsconfig.json` 只 include `src/`，不要把它并进插件类型检查。
 
 ## 代码结构
 
-- `src/index.ts`：前端插件类 `SiYuanPublisherPlugin`，注册顶栏菜单、命令、dock、tab 和设置面板；命令 `exportPublishArtifact` 导出当前文档，`publishDocument` 导出并上传到发布服务器。
-- `src/kernel.ts`：Kernel 生命周期；用 `api.rpc.bind` 注册 `echo`、`readSampleStorage`。
+- `src/index.ts`：前端插件类 `SiYuanPublisherPlugin`，只注册顶栏图标/菜单、导出/发布命令和设置面板；顶栏图标 `iconDocWebShare` 是插件图标的单色简化版（文档 + 地球）。命令行 `exportPublishArtifact` 导出当前文档，`publishDocument` 导出并上传到发布服务器。
+- `src/examples/frontend-examples.ts`：模板前端示例归档（自定义 tab/dock、slash、事件总线、完整顶栏菜单等），内容整体注释、不参与构建，仅作后续新增逻辑参考。`src/hello.svelte`、`src/setting-example.svelte` 是未被入口引用的模板演示组件。
+- `src/kernel.ts`：Kernel 生命周期；只保留 `echo`、`readSampleStorage` 两个模板 RPC，外部摘录服务已归档。
 - `src/api.ts`：思源 HTTP API 封装；`request()` 返回 `{ ok, raw, data }`。
-- `src/kernel-capture/`：外部摘录服务。
-  - `kernel-service.ts` 设置私有 HTTP handler：`GET /status`、`GET /capture`、`PUT /capture/config`、`POST /capture`。
-  - 写入流程：`/api/filetree/createDailyNote` + `/api/block/appendBlock`；状态用 `api.storage` 持久化。
-  - `contracts.ts` 是前后端共享类型。
-  - 前端与 kernel 通过 `kernel.rpc.bind/broadcast` 通信，事件为 `notify`、`capture-received`。
+- `src/examples/kernel-capture-examples.ts`：外部摘录服务（Kernel Plugin 示例）归档，含 kernel service、contracts、frontend client、capture-console.svelte、`src/index.ts` 接入片段和 i18n 文案；整体注释、不参与构建。恢复时取消注释，并重新接回 `src/kernel.ts` 与 `src/index.ts`。
+- `src/examples/kernel-capture-docs/`：外部摘录服务的原始文档，仅作参考，不随包发布。
 - `src/publish/`：静态发布产物与云端发布。
   - `template.ts`：按思源原生 `app/src/protyle/export/index.ts` 的 `onExport` 固化 `index.html`；固定浅色主题，不含插件 CSS、代码片段、自定义字体、移动端附加和书签图标。
   - `exporter.ts`：`exportHTML`（`pdf:false`、`savePath:""`）→ 校验 → 模板 → `/api/file/putFile` 写 `temp/export/<folder>/index.html`，返回 `{ folder, absoluteDir, name }`。
@@ -119,4 +116,4 @@
 
 - 流程：`pnpm update-version` → 提交 → `git tag vX.Y.Z && git push origin vX.Y.Z`。
 - CI 会校验 tag 版本与 `package.json`、`plugin.json` 一致，然后跑 `pnpm check:all`、`pnpm build`、`pnpm server:build` 并上传 `package.zip`。服务端不进入插件包。
-- Kernel 运行时模型见 `docs/kernel-plugin.md` 和 `docs/kernel-capture-demo.md`（会随包发布）。
+- Kernel Plugin 示例已归档到 `src/examples/kernel-capture-examples.ts`，文档在 `src/examples/kernel-capture-docs/`（不随包发布）。

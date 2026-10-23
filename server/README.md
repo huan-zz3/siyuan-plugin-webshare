@@ -1,4 +1,4 @@
-# 思源发布器服务端
+# 文档公网分享服务端
 
 这是 `siyuan-plugin-webshare` 的独立静态发布服务。它只做四件事：Bearer 鉴权、接收上传、校验文件清单、静态托管。它不解析、不改写、不 sanitize HTML。
 

@@ -1,7 +1,7 @@
 {
   "name": "siyuan-plugin-webshare",
-  "author": "【待填写】作者名",
-  "url": "【待填写】GitHub 仓库地址",
+  "author": "幻酌",
+  "url": "https://github.com/huan-zz3/siyuan-plugin-webshare",
   "version": "0.1.0",
   "minAppVersion": "3.8.0",
   "kernels": [
@@ -32,12 +32,12 @@
     "desktop-window"
   ],
   "displayName": {
-    "default": "SiYuan Publisher",
-    "zh-CN": "思源发布器"
+    "default": "Doc Web Share",
+    "zh-CN": "文档公网分享"
   },
   "description": {
-    "default": "SiYuan Publisher plugin (under development).",
-    "zh-CN": "思源笔记发布插件（开发中，功能待完善）"
+    "default": "[Siyuan Notes Public Network Sharing Plugin] The Siyuan Notes plugin supports sharing note content to the public network and generating accessible links. Free to use and self-deployable.",
+    "zh-CN": "【思源笔记公网分享插件】思源笔记插件，支持将笔记内容分享到公网，生成可访问的链接。免费使用，可自部署。"
   },
   "readme": {
     "default": "README.md",
@@ -46,7 +46,7 @@
   "icon": "icon.png",
   "preview": "preview.png",
   "keywords": [
-    "publisher",
+    "share",
     "发布",
     "思源"
   ]

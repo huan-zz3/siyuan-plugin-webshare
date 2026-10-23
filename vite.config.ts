@@ -82,7 +82,6 @@ export default defineConfig(buildTarget === "kernel" ? {
             targets: [
                 ...packageImageTargets,
                 { src: "./README*.md", dest: "./" },
-                { src: "./docs/*.md", dest: "./docs", rename: { stripBase: true } },
                 { src: "./asset/*", dest: "./asset", rename: { stripBase: true } },
                 { src: "./plugin.json", dest: "./" },
             ],
@@ -112,7 +111,6 @@ export default defineConfig(buildTarget === "kernel" ? {
                 watchExternalFiles([
                     "public/i18n/**",
                     "./README*.md",
-                    "./docs/*.md",
                     "./plugin.json"
                 ])
             ] : [],

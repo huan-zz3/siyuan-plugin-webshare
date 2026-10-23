@@ -1,13 +1,10 @@
 import type * as kernel from "siyuan/kernel";
-import { CaptureService } from "./kernel-capture/kernel-service";
 
 const STORAGE_FILE = "kernel-sample.json";
 const api: kernel.ISiyuan = siyuan;
-const captureService = new CaptureService(api);
 
 api.plugin.lifecycle.onload = async () => {
     await api.logger.info(`[${api.plugin.name}] kernel plugin loading`);
-    await captureService.start();
 
     await api.storage.put(STORAGE_FILE, JSON.stringify({
         message: "Hello from the kernel plugin",
@@ -36,7 +33,6 @@ api.plugin.lifecycle.onrunning = async () => {
 
 api.plugin.lifecycle.onunload = async () => {
     await api.logger.info(`[${api.plugin.name}] kernel plugin unloading`);
-    await captureService.stop();
     await api.rpc.unbind("echo");
     await api.rpc.unbind("readSampleStorage");
 };

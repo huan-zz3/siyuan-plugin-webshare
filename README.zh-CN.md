@@ -1,16 +1,17 @@
-# 思源发布器（SiYuan Publisher）
+# 文档公网分享（Doc Web Share）
 
-一个用于发布思源笔记的思源插件。**目前仍在开发中。**
+一个把思源笔记分享到公网的思源插件：把当前文档导出为自包含静态产物，并可上传到自部署的静态服务器，
+生成公开链接。免费使用，可自部署。
 
 [English](./README.md)
 
 ## 当前状态
 
 - 插件 id：`siyuan-plugin-webshare`
-- 显示名称：思源发布器 / SiYuan Publisher
+- 显示名称：文档公网分享 / Doc Web Share
 - 版本：`0.1.0`
-- 作者：【待填写】
-- 仓库地址：【待填写】
+- 作者：幻酌
+- 仓库地址：<https://github.com/huan-zz3/siyuan-plugin-webshare>
 
 项目基于 `plugin-sample-vite-svelte` 模板初始化。目前完成两个里程碑：把当前文档导出为可静态托管的 HTML 产物，以及把该产物上传到可独立运行的静态发布服务器。
 
@@ -68,7 +69,7 @@ pnpm dev
 
 ### 配置与发布
 
-打开插件设置（思源设置 → 插件 → 思源发布器 → 设置），填写：
+打开插件设置（思源设置 → 插件 → 文档公网分享 → 设置），填写：
 
 - **发布服务器地址**：只填 origin，例如 `https://publish.example.com`
 - **发布服务器 token**：服务端的 `PUBLISH_TOKEN`
@@ -131,15 +132,14 @@ pnpm server:build # 编译独立服务端
 | 路径 | 用途 |
 | --- | --- |
 | `src/index.ts` | 前端入口（生成 `index.js`） |
-| `src/kernel.ts` | Kernel 入口（生成 `kernel.js`，无 DOM / Node 内置模块） |
-| `src/kernel-capture/` | 模板自带的外部摘录服务示例 |
+| `src/examples/` | 归档的模板示例（前端片段与外部摘录服务；整体注释，不参与构建） |
+| `src/kernel.ts` | Kernel 入口（生成 `kernel.js`，仅保留示例 RPC） |
 | `src/publish/` | 产物导出、文件枚举、服务端客户端、上传编排、进度对话框 |
 | `server/` | 独立 Fastify 静态发布服务（自带 package、tsconfig 和测试） |
 | `src/api.ts` | 思源 HTTP API 封装 |
 | `src/libs/` | 设置、对话框、表单等工具 |
 | `public/i18n/` | 界面文案（`en.json`、`zh-CN.json`） |
 | `plugin.json` | 思源插件清单 |
-| `docs/` | Kernel Plugin 文档 |
 | `reference/` | 本地上游参考代码（被 git 忽略，不参与构建） |
 | `AGENTS.md` | 给 AI 编码代理的仓库约定 |
 

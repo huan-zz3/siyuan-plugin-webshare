@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Static hosting server for SiYuan Publisher artifacts.",
+  "description": "Static hosting server for Doc Web Share (siyuan-plugin-webshare) artifacts.",
   "engines": {
     "node": ">=24.0.0"
   },
