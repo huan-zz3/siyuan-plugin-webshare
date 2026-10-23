@@ -89,6 +89,7 @@
 - `tsconfig.json` 的 `strict` 是 `false`，但 `noUnusedLocals` / `noUnusedParameters` 为 `true`，且 `checkJs` 开启：未使用的 import 或参数会让 `pnpm check` 失败。
 - 新增 UI 文案必须同时改 `public/i18n/en.json` 和 `zh-CN.json`，代码里用 `this.i18n.<key>` 读取。`public/i18n` 也支持 YAML，构建时由 `yaml-plugin.js` 转成 JSON（当前项目用 JSON）。
 - `this.i18n` 的静态类型是平铺字符串；访问 `publish` 嵌套对象时要 `as unknown as Record<string, string>`，不要假设它有嵌套类型。
+- 插件设置走 `SettingUtils`（原生 `plugin.setting`）。`src/index.ts` 已删除模板对 `openSetting()` 的覆盖；不要恢复 Svelte 演示设置面板，否则发布服务器配置不会出现在插件设置中。
 - 发布 token 只用于 `server/` 的 Bearer 鉴权；读写思源内核用 `window.siyuan.config.api.token`（`Token` 方案），两者不能混用。
 - `server/data/` 与 `server/.env` 已忽略；不要提交运行时数据或真实 token。
 - 前端读写工作区 `data/` 下的文件必须走 `/api/file/*`，不要直接调用 `fs`，否则可能破坏同步数据。
