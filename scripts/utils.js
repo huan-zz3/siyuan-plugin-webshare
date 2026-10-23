@@ -31,7 +31,7 @@ export async function myfetch(url, options) {
             });
             res.on('end', () => {
                 resolve({
-                    ok: true,
+                    ok: res.statusCode >= 200 && res.statusCode < 300,
                     status: res.statusCode,
                     json: () => JSON.parse(data)
                 });
@@ -59,7 +59,17 @@ export async function getSiYuanDir() {
         if (response.ok) {
             conf = await response.json();
         } else {
-            error(`\tHTTP-Error: ${response.status}`);
+            let detail = `HTTP ${response.status}`;
+            try {
+                const payload = await response.json();
+                if (payload?.msg) {
+                    detail = `${detail}: ${payload.msg}`;
+                }
+            } catch {
+                // Keep the status-only message when the body is not JSON.
+            }
+            error(`\tSiYuan API error: ${detail}`);
+            error('\tSiYuan may be locked or require authentication; unlock it or set SIYUAN_PLUGIN_DIR.');
             return null;
         }
     } catch (e) {

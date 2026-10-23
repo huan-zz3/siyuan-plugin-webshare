@@ -17,13 +17,19 @@ let targetDir = '';
  */
 log('>>> Try to visit constant "targetDir" in make_install.js...');
 if (targetDir === '') {
-    log('>>> Constant "targetDir" is empty, try to get SiYuan directory automatically....');
-    let res = await getSiYuanDir();
-
-    if (res === null || res === undefined || res.length === 0) {
-        error('>>> Can not get SiYuan directory automatically');
-        process.exit(1);
+    const env = process.env?.SIYUAN_PLUGIN_DIR;
+    if (env) {
+        targetDir = env;
+        log(`\tGot target directory from environment variable "SIYUAN_PLUGIN_DIR": ${targetDir}`);
     } else {
+        log('>>> Constant "targetDir" is empty, try to get SiYuan directory automatically....');
+        const res = await getSiYuanDir();
+
+        if (res === null || res === undefined || res.length === 0) {
+            error('>>> Can not get SiYuan directory automatically');
+            error('>>> Unlock SiYuan, or set SIYUAN_PLUGIN_DIR to "<workspace>/data/plugins".');
+            process.exit(1);
+        }
         targetDir = await chooseTarget(res);
     }
     log(`>>> Successfully got target directory: ${targetDir}`);

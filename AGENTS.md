@@ -101,7 +101,7 @@
 
 - `pnpm make-link`：把 `dev/` 软链到 `<workspace>/data/plugins/<plugin.json 的 name>`。
 - Windows 创建目录软链需要开发者模式或管理员权限；否则用 `pnpm make-link-win`。
-- 设置环境变量 `SIYUAN_PLUGIN_DIR` 可直接指定插件目录，跳过交互选择。
+- 设置环境变量 `SIYUAN_PLUGIN_DIR`（值为 `<workspace>/data/plugins`）可让 `make-link` / `make-install` 跳过工作区探测；SiYuan 锁屏时 `getWorkspaces` 会返回 401。
 - `pnpm make-install`：先构建，再把 `dist/` 复制到插件目录。
 - `dev/`、`dist/`、`package.zip` 都是生成物，不要手改。
 - 服务端单独联调：`cd server`，复制 `.env.example` 为 `.env`，设置至少 32 字符的 `PUBLISH_TOKEN`，然后 `pnpm dev`。本地测试可用 `pnpm server:test`。

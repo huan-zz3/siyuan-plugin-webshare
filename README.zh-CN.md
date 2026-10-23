@@ -123,6 +123,9 @@ pnpm server:build # 编译独立服务端
 
 `pnpm make-install` 会先构建，再把 `dist/` 复制到思源插件目录（不使用软链）。
 
+如果思源处于锁屏状态，`make-install` 无法查询工作区列表。请先解锁思源，或把
+`SIYUAN_PLUGIN_DIR` 设为 `<workspace>/data/plugins`。
+
 ## 目录结构
 
 | 路径 | 用途 |

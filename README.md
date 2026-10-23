@@ -134,6 +134,9 @@ pnpm server:build # compiles the standalone server
 
 `pnpm make-install` builds and copies `dist/` into the SiYuan plugin directory instead of linking.
 
+If SiYuan is locked, `make-install` cannot query the workspace list. Unlock SiYuan, or set
+`SIYUAN_PLUGIN_DIR` to `<workspace>/data/plugins`.
+
 ## Project layout
 
 | Path | Purpose |
