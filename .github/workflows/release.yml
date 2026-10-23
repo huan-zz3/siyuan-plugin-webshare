@@ -56,11 +56,12 @@ jobs:
           echo "Release version validated: $tag_version"
 
       - name: Check source
-        run: pnpm check
+        run: pnpm check:all
 
       - name: Build production package
         run: |
           pnpm build
+          pnpm server:build
           cd dist
           zip -r ../package.zip ./*
 

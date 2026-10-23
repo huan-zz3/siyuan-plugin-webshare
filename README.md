@@ -12,13 +12,13 @@ A SiYuan plugin for publishing notes. **The plugin is under development.**
 - Author: TBD
 - Repository: TBD
 
-The project was initialized from the `plugin-sample-vite-svelte` template. Feature implementation has
-started with the first milestone: exporting the current document as a static, self-contained HTML
-artifact.
+The project was initialized from the `plugin-sample-vite-svelte` template. It now implements two
+milestones: exporting the current document as a static, self-contained HTML artifact, and uploading
+that artifact to an independently runnable static server.
 
 ## Requirements
 
-- Node.js >= 24
+- Node.js >= 24 (plugin and server)
 - pnpm 11.4
 - SiYuan desktop
 
@@ -53,12 +53,72 @@ Check images, custom emoji, code highlighting, inline and block math, mermaid, e
 flowchart, mindmap, and abc. Formula and diagram rendering happens in the visitor's browser through
 SiYuan's bundled runtime.
 
+## Publishing to a server (Milestone B)
+
+The plugin can upload the artifact to a small standalone server in `server/`. The server stores bytes
+and serves them from `/p/<id>/`; it does not parse, rewrite, sanitize, or render HTML. The visitor's
+browser runs SiYuan's bundled export runtime, so formulas and diagrams render exactly as in the local
+artifact.
+
+### Start the server
+
+```bash
+cd server
+cp .env.example .env
+# set PUBLISH_TOKEN to a random value of at least 32 characters
+pnpm install
+pnpm dev
+```
+
+See `server/README.md` for configuration, deployment, and security notes. The server must be mounted
+at the origin root (`/api/*`, `/p/*`); subpath deployment is not supported in this milestone.
+
+### Configure and publish
+
+Open the plugin settings (SiYuan settings → Plugins → SiYuan Publisher → Settings) and set:
+
+- **Publish server URL**: origin only, for example `https://publish.example.com`
+- **Publish server token**: the server's `PUBLISH_TOKEN`
+- **Test connection** verifies the URL and token.
+
+Open a document and run **Publish to server** from the command palette or the top-bar menu. The dialog
+shows export, upload progress, and the final URL. Closing the dialog aborts the publish. Each publish
+creates a new immutable URL; republishing does not overwrite the previous one.
+
+The publish server token is not the SiYuan API token. The plugin uses the SiYuan token only to read the
+local artifact through the kernel.
+
+### Current limits
+
+- No HTML sanitization. Only the token holder can upload, but published pages execute inline scripts on
+  the hosting domain; use a dedicated domain without cookies or admin sessions.
+- No shared-asset deduplication. Each publication carries its own `stage/` and `appearance/` copy
+  (tens of MB per document); `public/` grows linearly.
+- No access control, expiry, deletion API, publishing history, or stable URLs.
+- The server must stay on the domain root; `/p/<id>` redirects to `/p/<id>/` because the export page
+  uses relative asset paths.
+- The local artifact is temporary. Publish before restarting SiYuan or locking an encrypted notebook.
+
+### Verification
+
+```bash
+pnpm check:all   # plugin types/Svelte + server type check + server tests
+pnpm build       # plugin dist/ and package.zip
+pnpm server:build
+```
+
+The server test suite covers authentication, CORS preflight, create/upload/complete, static serving,
+trailing-slash redirects, traversal, manifest mismatches, size limits, and staging cleanup. For an
+end-to-end check, upload a real artifact and open the returned URL on another device; verify images,
+emoji, code highlighting, math, mermaid, echarts, graphviz, flowchart, mindmap, and abc.
+
 ## Development
 
 ```bash
 pnpm i
 pnpm make-link   # link dev/ into <workspace>/data/plugins/siyuan-plugin-webshare
 pnpm dev         # watch the frontend and kernel bundles
+pnpm server:dev  # watch the standalone publish server
 ```
 
 Then open SiYuan, enable the plugin in the marketplace, and press `Ctrl+Shift+I` to open DevTools.
@@ -66,8 +126,10 @@ Then open SiYuan, enable the plugin in the marketplace, and press `Ctrl+Shift+I`
 Verification:
 
 ```bash
-pnpm check
-pnpm build       # writes dist/ and package.zip
+pnpm check        # plugin only
+pnpm check:all    # plugin + server type check + server tests
+pnpm build        # writes dist/ and package.zip
+pnpm server:build # compiles the standalone server
 ```
 
 `pnpm make-install` builds and copies `dist/` into the SiYuan plugin directory instead of linking.
@@ -79,7 +141,8 @@ pnpm build       # writes dist/ and package.zip
 | `src/index.ts` | Frontend entry (`index.js`) |
 | `src/kernel.ts` | Kernel entry (`kernel.js`, no DOM / Node built-ins) |
 | `src/kernel-capture/` | External capture service example kept from the template |
-| `src/publish/` | Static HTML artifact export (`exportHTML` + fixed `index.html` template) |
+| `src/publish/` | Artifact export, artifact enumeration, server client, upload orchestration, progress dialog |
+| `server/` | Independent Fastify static publishing service (own package, tsconfig, and tests) |
 | `src/api.ts` | SiYuan HTTP API wrapper |
 | `src/libs/` | Settings, dialog, and form helpers |
 | `public/i18n/` | UI translations (`en.json`, `zh-CN.json`) |

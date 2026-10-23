@@ -167,6 +167,11 @@ describe("publication lifecycle", () => {
 
         const missing = await fetch(`${baseUrl}/p/${created.id}/missing.txt`);
         assert.equal(missing.status, 404);
+
+        for (const path of ["%2e%2e/%2e%2e/package.json", "..%2f..%2fserver%2fpackage.json"]) {
+            const traversal = await fetch(`${baseUrl}/p/${created.id}/${path}`);
+            assert.notEqual(traversal.status, 200, `static traversal returned 200 for ${path}`);
+        }
     });
 
     it("rejects uploads to a committed publication", async () => {
