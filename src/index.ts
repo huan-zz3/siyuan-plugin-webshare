@@ -32,10 +32,12 @@ import {
 import "./index.scss";
 
 import HelloExample from "@/hello.svelte";
-import SettingExample from "@/setting-example.svelte";
 import CaptureConsole from "@/kernel-capture/capture-console.svelte";
 import type { CaptureBroadcast, CaptureResult } from "@/kernel-capture/contracts";
 import { exportDocumentAsArtifact } from "@/publish/exporter";
+import PublishDialog from "@/publish/publish-dialog.svelte";
+import { PublishClient } from "@/publish/publish-client";
+import type { PublishConfig } from "@/publish/types";
 
 import { SettingUtils } from "./libs/setting-utils";
 import { svelteDialog } from "./libs/dialog";
@@ -55,6 +57,8 @@ export default class SiYuanPublisherPlugin extends Plugin {
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     private settingUtils: SettingUtils;
     private captureDialog?: ReturnType<typeof svelteDialog>;
+    private publishDialog?: ReturnType<typeof svelteDialog>;
+    private publishAbort?: AbortController;
 
 
     updateProtyleToolbar(toolbar: Array<string | IMenuItem>) {
@@ -151,6 +155,24 @@ export default class SiYuanPublisherPlugin extends Plugin {
             },
         });
 
+        this.addCommand({
+            langKey: "publishDocument",
+            editorCallback: (protyle: IProtyle) => {
+                const documentId = protyle.block?.rootID;
+                if (!documentId) {
+                    showMessage(this.i18n.publishDocumentNoDoc);
+                    return;
+                }
+                const config = this.readPublishConfig();
+                if (!config) {
+                    showMessage(this.i18n.publishMissingConfig, 10000);
+                    this.openSetting();
+                    return;
+                }
+                this.openPublishDialog(documentId, config);
+            },
+        });
+
         const isMobile = this.isMobile;
         this.addDock({
             config: {
@@ -201,133 +223,56 @@ export default class SiYuanPublisherPlugin extends Plugin {
             }
         });
 
+        const publishLabels = this.i18n.publish as unknown as Record<string, string>;
         this.settingUtils = new SettingUtils({
             plugin: this, name: STORAGE_NAME
         });
         this.settingUtils.addItem({
-            key: "Input",
+            key: "publishServerUrl",
             value: "",
             type: "textinput",
-            title: "Readonly text",
-            description: "Input description",
-            action: {
-                // Called when focus is lost and content changes
-                callback: () => {
-                    // Return data and save it in real time
-                    let value = this.settingUtils.takeAndSave("Input");
-                    console.log(value);
-                }
-            }
+            title: publishLabels.settingsUrlTitle,
+            description: publishLabels.settingsUrlDesc,
+            placeholder: "https://publish.example.com",
         });
         this.settingUtils.addItem({
-            key: "InputArea",
-            value: "",
-            type: "textarea",
-            title: "Readonly text",
-            description: "Input description",
-            // Called when focus is lost and content changes
-            action: {
-                callback: () => {
-                    // Read data in real time
-                    let value = this.settingUtils.take("InputArea");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Check",
-            value: true,
-            type: "checkbox",
-            title: "Checkbox text",
-            description: "Check description",
-            action: {
-                callback: () => {
-                    // Return data and save it in real time
-                    let value = !this.settingUtils.get("Check");
-                    this.settingUtils.set("Check", value);
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Select",
-            value: 1,
-            type: "select",
-            title: "Select",
-            description: "Select description",
-            options: {
-                1: "Option 1",
-                2: "Option 2"
-            },
-            action: {
-                callback: () => {
-                    // Read data in real time
-                    let value = this.settingUtils.take("Select");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Slider",
-            value: 50,
-            type: "slider",
-            title: "Slider text",
-            description: "Slider description",
-            direction: "column",
-            slider: {
-                min: 0,
-                max: 100,
-                step: 1,
-            },
-            action: {
-                callback: () => {
-                    // Read data in real time
-                    let value = this.settingUtils.take("Slider");
-                    console.log(value);
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Btn",
-            value: "",
-            type: "button",
-            title: "Button",
-            description: "Button description",
-            button: {
-                label: "Button",
-                callback: () => {
-                    showMessage("Button clicked");
-                }
-            }
-        });
-        this.settingUtils.addItem({
-            key: "Custom Element",
+            key: "publishServerToken",
             value: "",
             type: "custom",
-            direction: "row",
-            title: "Custom Element",
-            description: "Custom Element description",
-            //Any custom element must offer the following methods
+            title: publishLabels.settingsTokenTitle,
+            description: publishLabels.settingsTokenDesc,
             createElement: (currentVal: any) => {
-                let div = document.createElement('div');
-                div.style.border = "1px solid var(--b3-theme-primary)";
-                div.contentEditable = "true";
-                div.textContent = currentVal;
-                return div;
+                const input = document.createElement("input");
+                input.className = "b3-text-field fn__block";
+                input.type = "password";
+                input.autocomplete = "off";
+                input.value = typeof currentVal === "string" ? currentVal : "";
+                return input;
             },
-            getEleVal: (ele: HTMLElement) => {
-                return ele.textContent;
-            },
+            getEleVal: (ele: HTMLElement) => (ele as HTMLInputElement).value,
             setEleVal: (ele: HTMLElement, val: any) => {
-                ele.textContent = val;
-            }
+                (ele as HTMLInputElement).value = typeof val === "string" ? val : "";
+            },
         });
         this.settingUtils.addItem({
-            key: "Hint",
+            key: "publishTestConnection",
+            value: "",
+            type: "button",
+            title: publishLabels.settingsTestTitle,
+            description: publishLabels.settingsTestDesc,
+            button: {
+                label: publishLabels.testConnection,
+                callback: () => {
+                    void this.testPublishConnection();
+                },
+            },
+        });
+        this.settingUtils.addItem({
+            key: "publishHint",
             value: "",
             type: "hint",
-            title: this.i18n.hintTitle,
-            description: this.i18n.hintDesc,
+            title: publishLabels.settingsHintTitle,
+            description: publishLabels.settingsHintDesc,
         });
 
         try {
@@ -428,6 +373,10 @@ export default class SiYuanPublisherPlugin extends Plugin {
 
     async onunload() {
         console.log(this.i18n.byePlugin);
+        this.publishAbort?.abort();
+        this.publishDialog?.close();
+        this.publishDialog = undefined;
+        this.publishAbort = undefined;
         this.captureDialog?.close();
         this.captureDialog = undefined;
         this.kernel.rpc.unbind("notify", this.onKernelPluginNotify);
@@ -484,34 +433,6 @@ export default class SiYuanPublisherPlugin extends Plugin {
         });
         return options;
     }
-    /**
-     * A custom setting pannel provided by svelte
-     */
-    openSetting(): void {
-        // let dialog = new Dialog({
-        //     title: "SettingPannel",
-        //     content: `<div id="SettingPanel" style="height: 100%;"></div>`,
-        //     width: "800px",
-        //     destroyCallback: (options) => {
-        //         console.log("destroyCallback", options);
-        //         //You'd better destroy the component when the dialog is closed
-        //         unmount(pannel);
-        //     }
-        // });
-        // let pannel = mount(SettingExample, {
-        //     target: dialog.element.querySelector("#SettingPanel"),
-        // });
-        svelteDialog({
-            title: "SettingPannel",
-            width: "800px",
-            height: "35rem",
-            component: SettingExample,
-            props: {
-                app: this.app,
-            }
-        });
-    }
-
     private eventBusPaste(event: any) {
         // 如果需异步处理请调用 preventDefault， 否则会进行默认处理
         event.preventDefault();
@@ -561,6 +482,74 @@ export default class SiYuanPublisherPlugin extends Plugin {
         });
     }
 
+    private readPublishConfig(): PublishConfig | null {
+        const baseUrl = String(this.settingUtils?.get("publishServerUrl") ?? "").trim();
+        const token = String(this.settingUtils?.get("publishServerToken") ?? "").trim();
+        if (!baseUrl || !token) {
+            return null;
+        }
+        return { baseUrl, token };
+    }
+
+    private async testPublishConnection(): Promise<void> {
+        const labels = this.i18n.publish as unknown as Record<string, string>;
+        const baseUrl = String(this.settingUtils.take("publishServerUrl") ?? "").trim();
+        const token = String(this.settingUtils.take("publishServerToken") ?? "").trim();
+        if (!baseUrl || !token) {
+            showMessage(labels.testMissing, 8000);
+            return;
+        }
+
+        try {
+            const client = new PublishClient({ baseUrl, token });
+            const health = await client.health();
+            if (!health.ok || health.service !== "siyuan-publisher-server") {
+                throw new Error(`unexpected service response: ${JSON.stringify(health)}`);
+            }
+            showMessage(labels.testOk, 5000);
+        } catch (error) {
+            const reason = error instanceof Error ? error.message : String(error);
+            console.error("[siyuan-plugin-webshare] publish connection test failed", error);
+            showMessage(`${labels.testFailed}: ${reason}`, 10000);
+        }
+    }
+
+    private openPublishDialog(documentId: string, config: PublishConfig): void {
+        this.publishAbort?.abort();
+        this.publishDialog?.close();
+        this.publishDialog = undefined;
+        this.publishAbort = undefined;
+
+        const labels = this.i18n.publish as unknown as Record<string, string>;
+        const controller = new AbortController();
+        this.publishAbort = controller;
+
+        try {
+            this.publishDialog = svelteDialog({
+                title: labels.dialogTitle,
+                width: this.isMobile ? "92vw" : "600px",
+                component: PublishDialog,
+                props: {
+                    labels,
+                    config,
+                    documentId,
+                    signal: controller.signal,
+                },
+                callback: () => {
+                    controller.abort();
+                    this.publishDialog = undefined;
+                    this.publishAbort = undefined;
+                },
+            });
+        } catch (error) {
+            controller.abort();
+            this.publishAbort = undefined;
+            console.error("[siyuan-plugin-webshare] failed to open publish dialog", error);
+            const reason = error instanceof Error ? error.message : String(error);
+            showMessage(`${labels.failed}: ${reason}`, 10000);
+        }
+    }
+
     private openCaptureConsole(initialResult?: CaptureResult) {
         const labels = this.i18n.kernelCapture as unknown as Record<string, string>;
         if (this.captureDialog) {
@@ -602,6 +591,28 @@ export default class SiYuanPublisherPlugin extends Plugin {
             label: "Open Plugin Setting",
             click: () => {
                 this.openSetting();
+            }
+        });
+        menu.addItem({
+            icon: "iconUpload",
+            label: this.i18n.publishDocument,
+            click: () => {
+                const editor = this.getEditor();
+                if (!editor) {
+                    return;
+                }
+                const documentId = editor.protyle.block.rootID;
+                if (!documentId) {
+                    showMessage(this.i18n.publishDocumentNoDoc);
+                    return;
+                }
+                const config = this.readPublishConfig();
+                if (!config) {
+                    showMessage(this.i18n.publishMissingConfig, 10000);
+                    this.openSetting();
+                    return;
+                }
+                this.openPublishDialog(documentId, config);
             }
         });
         menu.addSeparator();

@@ -31,3 +31,64 @@ export interface ExportArtifact {
     /** Document name reported by the kernel export. */
     name: string;
 }
+
+/** Configuration required to reach the publish server. */
+export interface PublishConfig {
+    /** Server origin, for example `https://publish.example.com`. */
+    baseUrl: string;
+    /** Publish server bearer token; unrelated to the SiYuan API token. */
+    token: string;
+}
+
+/** A file discovered inside the local export artifact. */
+export interface ArtifactFile {
+    /** POSIX-style path relative to the artifact root. */
+    relativePath: string;
+}
+
+/** Upload phases reported to the publish dialog. */
+export type PublishPhase = "exporting" | "listing" | "creating" | "uploading" | "completing" | "done";
+
+export interface PublishProgress {
+    phase: PublishPhase;
+    uploadedFiles: number;
+    totalFiles: number;
+    uploadedBytes: number;
+}
+
+export interface PublishManifestEntry {
+    path: string;
+    size: number;
+}
+
+export interface PublishResult {
+    id: string;
+    url: string;
+    fileCount: number;
+    totalBytes: number;
+}
+
+export interface ServerCreateResponse {
+    id: string;
+    path: string;
+}
+
+export interface ServerCompleteResponse {
+    id: string;
+    path: string;
+    fileCount: number;
+    totalBytes: number;
+}
+
+export interface ServerHealthResponse {
+    ok: boolean;
+    service: string;
+    version: number;
+}
+
+export interface ServerErrorResponse {
+    error?: string;
+    message?: string;
+    requestId?: string;
+    details?: unknown;
+}
